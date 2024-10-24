@@ -49,38 +49,31 @@ class AuthController extends Controller
 
     public function verificarToken(Request $request)
     {
-        Log::info('Token function called');
         $token = $request->bearerToken();
 
         if (!$token) {
-            Log::warning('No token provided');
             return response()->json(['error' => 'Token no proporcionado'], 401);
         }
 
         try {
             // Decodifica el encabezado para obtener el 'kid'
             $tokenParts = explode('.', $token);
-
             $header = json_decode(base64_decode($tokenParts[0]), true);
             $kid = $header['kid'];
 
-
             // Recupera las claves públicas de Firebase
             $publicKeys = Cache::remember('firebase_public_keys', 60, function () {
-                $client = new Client([ 'verify' => false ]);
+                $client = new Client(['verify' => false]);
 
                 $response = $client->get('https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com');
 
-
-               if ($response->getStatusCode() === 200) {
+                if ($response->getStatusCode() === 200) {
 
                     return json_decode($response->getBody(), true);
                 } else {
-                    Log::error('Failed to obtain public keys from Firebase');
                     return [];
                 }
             });
-
 
             // Verifica que el 'kid' esté en las claves públicas
             if (!isset($publicKeys[$kid])) {
@@ -88,11 +81,12 @@ class AuthController extends Controller
             }
 
             // Usa la clave pública correspondiente para verificar el token
-
+            JWT::$leeway = 30;
             $decodedToken = JWT::decode($token, new Key($publicKeys[$kid], 'RS256'));
-            Log::info('Decoded token', (array) $decodedToken);
 
+            // Devuelve el token decodificado al frontend
             return response()->json(['user' => $decodedToken]);
+
         } catch (\Firebase\JWT\ExpiredException $e) {
             return response()->json(['error' => 'Token expirado', 'message' => $e->getMessage()], 401);
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
