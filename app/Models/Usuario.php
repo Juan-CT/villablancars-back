@@ -15,6 +15,7 @@ class Usuario extends Model
         'idFirebase',
         'nombre',
         'email',
+        'rol'
     ];
 
     public $timestamps = true;

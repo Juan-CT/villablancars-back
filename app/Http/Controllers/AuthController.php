@@ -25,11 +25,11 @@ class AuthController extends Controller
             'idFirebase' => $request->idFirebase,
             'nombre' => $request->nombre,
             'email' => $request->email,
+            'rol' => 'usuario'
         ]);
         // Se retorna la respuesta exitosa
         return response()->json([
             'message' => 'Usuario creado',
-            'usuario' => $usuario
         ], 201);
     }
 
@@ -84,9 +84,18 @@ class AuthController extends Controller
             JWT::$leeway = 30;
             $decodedToken = JWT::decode($token, new Key($publicKeys[$kid], 'RS256'));
 
-            // Devuelve el token decodificado al frontend
-            return response()->json(['user' => $decodedToken]);
+            if (!isset($decodedToken->user_id)) {
+                return response()->json(['error' => 'user_id no válido en el token'], 401);
+            }
 
+            $userId = $decodedToken->user_id;
+            $usuario = Usuario::where('idFirebase', $userId)->first();
+
+            if ($usuario) {
+                return response()->json(['rol' => $usuario->rol ?? 'usuario']);
+            } else {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
         } catch (\Firebase\JWT\ExpiredException $e) {
             return response()->json(['error' => 'Token expirado', 'message' => $e->getMessage()], 401);
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
