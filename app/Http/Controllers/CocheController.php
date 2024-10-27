@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Marca;
 use App\Models\Carroceria;
 use Illuminate\Http\Request;
+use App\Models\Coche;
 
 class CocheController extends Controller
 {
@@ -18,5 +19,44 @@ class CocheController extends Controller
             'marcas' => $marcas,
             'carrocerias' => $carrocerias,
         ]);
+    }
+
+    public function guardarCoche(Request $request)
+    {
+        // Validación de datos
+        $datosValidados = $request->validate([
+            'marca_id' => 'required|integer',
+            'carroceria_id' => 'required|integer',
+            'cambio_id' => 'required|integer',
+            'modelo' => 'required|string|max:255',
+            'anio' => 'required|integer|digits:4',
+            'color' => 'required|string|max:50',
+            'precio' => 'required|numeric',
+            'kilometros' => 'required|numeric',
+            'autonomia' => 'required|numeric',
+            'potencia' => 'required|numeric',
+            'descripcion' => 'required|string',
+        ]);
+        try {
+            // Creación del coche a enviar a la bbdd
+            $coche = new Coche();
+            $coche->marca_id = $datosValidados['marca_id'];
+            $coche->carroceria_id = $datosValidados['carroceria_id'];
+            $coche->cambio_id = $datosValidados['cambio_id'];
+            $coche->modelo = $datosValidados['modelo'];
+            $coche->anio = $datosValidados['anio'];
+            $coche->color = $datosValidados['color'];
+            $coche->precio = $datosValidados['precio'];
+            $coche->kilometros = $datosValidados['kilometros'];
+            $coche->autonomia = $datosValidados['autonomia'];
+            $coche->potencia = $datosValidados['potencia'];
+            $coche->descripcion = $datosValidados['descripcion'];
+
+            $coche->save();
+
+            return response()->noContent(201);
+        } catch (\Exception $e) {
+            return response()->noContent(500);
+        }
     }
 }

@@ -12,12 +12,13 @@ class Coche extends Model
     protected $fillable = [
         'marca_id',
         'carroceria_id',
+        'cambio_id',
         'modelo',
         'anio',
         'color',
         'precio',
         'kilometros',
-        'cilindrada',
+        'autonomia',
         'potencia',
         'descripcion'
     ];
@@ -30,5 +31,10 @@ class Coche extends Model
     public function carroceria()
     {
         return $this->belongsTo(Carroceria::class);
+    }
+
+    public function cambio()
+    {
+        return $this->belongsTo(Cambio::class);
     }
 }

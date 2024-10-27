@@ -10,3 +10,4 @@ Route::post('/verificar-email', [AuthController::class, 'comprobarEmail']);
 Route::get('/verificar-token', [AuthController::class, 'verificarToken']);
 
 Route::get('/marcas-carrocerias', [CocheController::class, 'obtenerMarcasCarrocerias']);
+Route::post('/guardar-coche', [CocheController::class, 'guardarcoche']);
