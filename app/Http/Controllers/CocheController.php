@@ -6,6 +6,7 @@ use App\Models\Marca;
 use App\Models\Carroceria;
 use Illuminate\Http\Request;
 use App\Models\Coche;
+use Illuminate\Support\Facades\Log;
 
 class CocheController extends Controller
 {
@@ -55,6 +56,28 @@ class CocheController extends Controller
             $coche->save();
 
             return response()->noContent(201);
+        } catch (\Exception $e) {
+            return response()->noContent(500);
+        }
+    }
+
+    public function obtenerCoches()
+    {
+        try {
+            $coches = Coche::all();
+            return response()->json($coches, 200);
+        } catch (\Exception $e) {
+            Log::error('Error al intentar traer los coches de la BBDD' . $e->getMessage());
+            return response()->json(['message' => 'Error al obtener los coches'], 500);
+        }
+    }
+
+    public function eliminarCoche($id)
+    {
+        try {
+            $coche = Coche::findOrFail($id);
+            $coche->delete();
+            return response()->noContent(200);
         } catch (\Exception $e) {
             return response()->noContent(500);
         }
