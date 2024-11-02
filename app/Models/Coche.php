@@ -20,7 +20,7 @@ class Coche extends Model
         'kilometros',
         'autonomia',
         'potencia',
-        'descripcion'
+        'descripcion',
     ];
 
     public function marca()
@@ -36,5 +36,10 @@ class Coche extends Model
     public function cambio()
     {
         return $this->belongsTo(Cambio::class);
+    }
+
+    public function imagenes()
+    {
+        return $this->hasMany(Imagen::class);
     }
 }

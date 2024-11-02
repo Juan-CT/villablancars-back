@@ -16,3 +16,5 @@ Route::get('/marcas-carrocerias', [CocheController::class, 'obtenerMarcasCarroce
 Route::post('/guardar-coche', [CocheController::class, 'guardarcoche']);
 Route::get('/obtener-coches', [CocheController::class, 'obtenerCoches']);
 Route::delete('/eliminar-coche/{id}', [CocheController::class, 'eliminarCoche']);
+Route::put('/editar-coche/{id}', [CocheController::class, 'editarCoche']);
+Route::delete('/eliminar-imagen', [CocheController::class, 'eliminarImagen']);
