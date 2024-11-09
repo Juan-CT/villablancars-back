@@ -38,3 +38,5 @@ INSERT INTO marcas (nombre) VALUES
 select * from marcas;
 
 alter table marcas drop column created_at, drop column updated_at;
+
+delete from marcas where nombre in ('Ssangyong', 'Jaguar', 'Smart', 'Land-Rover');
