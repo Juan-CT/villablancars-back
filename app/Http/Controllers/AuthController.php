@@ -104,4 +104,25 @@ class AuthController extends Controller
             return response()->json(['error' => 'Token no válido', 'message' => $e->getMessage()], 401);
         }
     }
+
+    public function actualizarCorreo(Request $request)
+    {
+        Log::info('Datos recibidos para actualizar correo:', $request->all());
+        $request->validate([
+            'idFirebase' => 'required|string|max:255',
+            'email' => 'required|email',
+        ]);
+        Log::info('Validación de datos exitosa.');
+        $usuario = Usuario::where('idFirebase', $request->idFirebase)->first();
+
+        if (!$usuario) {
+            Log::warning('Usuario no encontrado para el idFirebase: ' . $request->idFirebase);
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        $usuario->email = $request->email;
+        $usuario->save();
+        Log::info('Correo electrónico actualizado correctamente para el idFirebase: ' . $request->idFirebase);
+        return response()->json(['message' => 'Correo electrónico actualizado correctamente'], 200);
+    }
 }
