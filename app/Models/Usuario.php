@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Usuario extends Model
 {
     use HasFactory;
-    // Nombre de tabla a la que corresponde el modelo
+
     protected $table = 'usuarios';
-    // Atributos asignables a la tabla
+
     protected $fillable = [
         'idFirebase',
         'nombre',
@@ -19,4 +19,14 @@ class Usuario extends Model
     ];
 
     public $timestamps = true;
+
+    public function coches()
+    {
+        return $this->belongsToMany(Coche::class, 'usuario_coche', 'usuario_id', 'coche_id');
+    }
+
+    public function cita()
+    {
+        return $this->hasMany(Cita::class);
+    }
 }

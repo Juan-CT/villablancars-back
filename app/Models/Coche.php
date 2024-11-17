@@ -42,4 +42,15 @@ class Coche extends Model
     {
         return $this->hasMany(Imagen::class);
     }
+
+    public function usuarios()
+    {
+        return $this->belongsToMany(Usuario::class, 'usuario_coche', 'coche_id', 'usuario_id');
+    }
+
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
+
 }

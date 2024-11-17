@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CocheController;
-
+use App\Http\Controllers\GestorController;
 
 // AUTH ROUTES
 Route::post('/guardarUsuario', [AuthController::class, 'registrarUsuario']);
@@ -19,3 +19,8 @@ Route::get('/obtener-coches', [CocheController::class, 'obtenerCoches']);
 Route::delete('/eliminar-coche/{id}', [CocheController::class, 'eliminarCoche']);
 Route::put('/editar-coche/{id}', [CocheController::class, 'editarCoche']);
 Route::delete('/eliminar-imagen', [CocheController::class, 'eliminarImagen']);
+
+// GESTOR ROUTES
+Route::post('/usuario/coche-guardar', [GestorController::class, 'guardarCoche']);
+Route::get('/usuario/coches-guardados', [GestorController::class, 'obtenerCochesUsuario']);
+Route::delete('/usuario/eliminar-coche', [GestorController::class, 'eliminarCocheUsuario']);

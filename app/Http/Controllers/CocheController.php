@@ -120,10 +120,9 @@ class CocheController extends Controller
     {
         try {
             $coches = Coche::with('imagenes')->get()->map(function ($coche) {
-                // Cambia la URL de cada imagen a una URL completa
+
                 $coche->imagenes->each(function ($imagen) {
-                    // Asegúrate de que el campo 'nombre' sea el correcto para tu caso
-                    $imagen->url = url($imagen->url); // Cambia 'ruta' por el campo correcto que almacena la ruta relativa
+                    $imagen->url = url($imagen->url);
                 });
                 return $coche;
             });
