@@ -21,6 +21,12 @@ Route::put('/editar-coche/{id}', [CocheController::class, 'editarCoche']);
 Route::delete('/eliminar-imagen', [CocheController::class, 'eliminarImagen']);
 
 // GESTOR ROUTES
-Route::post('/usuario/coche-guardar', [GestorController::class, 'guardarCoche']);
+Route::post('/usuario/coche-guardar', [GestorController::class, 'guardarCocheUsuario']);
 Route::get('/usuario/coches-guardados', [GestorController::class, 'obtenerCochesUsuario']);
 Route::delete('/usuario/eliminar-coche', [GestorController::class, 'eliminarCocheUsuario']);
+Route::get('/usuario/horas-citas', [GestorController::class, 'obtenerHorasCitasDia']);
+Route::get('/usuarios', [GestorController::class, 'obtenerUsuarios']);
+Route::get('/citas', [GestorController::class, 'obtenerCitas']);
+Route::get('/usuario/cita', [GestorController::class, 'obtenerCitaUsuario']);
+Route::post('/guardar-cita', [GestorController::class, 'crearCita']);
+Route::get('/usuario/citas', [GestorController::class, 'obtenerCitasUsuario']);
