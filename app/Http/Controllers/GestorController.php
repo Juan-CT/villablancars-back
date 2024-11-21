@@ -103,12 +103,39 @@ class GestorController extends Controller
         return response()->json([
             'citas' => $citas
         ], 200);
-
     }
 
-    public function obtenerCitaUsuario()
+    public function obtenerCitasUsuario(Request $request)
     {
+        $request->validate([
+            'idFirebase' => 'required|string',
+        ]);
 
+        $idFirebase = $request->input('idFirebase');
+        $usuario = Usuario::where('idFirebase', $idFirebase)->first();
+
+        if (!$usuario) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        try {
+
+            $citas = Cita::where('usuario_id', $usuario->id)
+                ->with(['coche.imagenes'])
+                ->orderBy('fecha', 'asc')
+                ->get();
+
+
+            $citas->each(function ($cita) {
+                $cita->coche->imagenes->each(function ($imagen) {
+                    $imagen->url = url($imagen->url);
+                });
+            });
+
+            return response()->json(['citas' => $citas], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al obtener las citas'], 500);
+        }
     }
 
     public function crearCita(Request $request)
