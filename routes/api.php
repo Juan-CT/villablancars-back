@@ -30,3 +30,4 @@ Route::get('/citas', [GestorController::class, 'obtenerCitas']);
 Route::get('/usuario/cita', [GestorController::class, 'obtenerCitaUsuario']);
 Route::post('/guardar-cita', [GestorController::class, 'crearCita']);
 Route::get('/usuario/citas', [GestorController::class, 'obtenerCitasUsuario']);
+Route::delete('/usuario/eliminar-cita', [GestorController::class, 'eliminarCita']);

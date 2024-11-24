@@ -166,4 +166,17 @@ class GestorController extends Controller
 
         return response()->noContent(200);
     }
+
+    public function eliminarCita(Request $request)
+    {
+        $request->validate([
+            'idCita' => 'required|exists:citas,id'
+        ]);
+
+        $cita = Cita::where('id', $request->input('idCita'))->firstOrFail();
+
+        $cita->delete();
+
+        return response()->noContent(200);
+    }
 }
