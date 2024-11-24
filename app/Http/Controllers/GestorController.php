@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Coche;
 use App\Models\Cita;
+use App\Mail\CitaGenerada;
+use Illuminate\Support\Facades\Mail;
 
 class GestorController extends Controller
 {
@@ -154,17 +156,36 @@ class GestorController extends Controller
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
 
-        $cita = new Cita();
-        $cita->usuario_id = $usuario->id;
-        $cita->coche_id = $request->coche_id;
-        $cita->fecha = $request->fecha;
-        $cita->hora = $request->hora;
-        $cita->descripcion = $request->descripcion ?? '';
-        $cita->estado = 'pendiente';
+        $citaId = $request->query('citaId');
 
-        $cita->save();
+        if ($citaId) {
+            $cita = Cita::where('id', $citaId)->where('usuario_id', $usuario->id)->firstOrFail();
+            $cita->update([
+                'coche_id' => $request->input('coche_id'),
+                'fecha' => $request->input('fecha'),
+                'hora' => $request->input('hora'),
+                'descripcion' => $request->input('descripcion')
+            ]);
+            return response()->noContent(200);
 
-        return response()->noContent(200);
+        } else {
+            $cita = new Cita();
+            $cita->usuario_id = $usuario->id;
+            $cita->coche_id = $request->coche_id;
+            $cita->fecha = $request->fecha;
+            $cita->hora = $request->hora;
+            $cita->descripcion = $request->descripcion ?? '';
+            $cita->estado = 'pendiente';
+
+            $cita->save();
+
+            $administradores = Usuario::where('rol', 'admin')->get();
+            foreach ($administradores as $admin) {
+                Mail::to($admin->email)->send(new CitaGenerada($cita));
+            }
+
+            return response()->noContent(200);
+        }
     }
 
     public function eliminarCita(Request $request)
