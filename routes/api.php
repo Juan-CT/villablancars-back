@@ -27,6 +27,7 @@ Route::delete('/usuario/eliminar-coche', [GestorController::class, 'eliminarCoch
 Route::get('/usuario/horas-citas', [GestorController::class, 'obtenerHorasCitasDia']);
 Route::get('/usuarios', [GestorController::class, 'obtenerUsuarios']);
 Route::get('/citas', [GestorController::class, 'obtenerCitas']);
+Route::put('/citas/{id}/estado', [GestorController::class, 'actualizarEstadoCita']);
 Route::get('/usuario/cita', [GestorController::class, 'obtenerCitaUsuario']);
 Route::post('/guardar-cita', [GestorController::class, 'crearCita']);
 Route::get('/usuario/citas', [GestorController::class, 'obtenerCitasUsuario']);

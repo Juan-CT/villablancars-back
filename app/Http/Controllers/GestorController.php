@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CitaEliminada;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Coche;
 use App\Models\Cita;
 use App\Mail\CitaGenerada;
+use App\Mail\CitaEstadoActualizado;
 use Illuminate\Support\Facades\Mail;
 
 class GestorController extends Controller
@@ -164,10 +166,10 @@ class GestorController extends Controller
                 'coche_id' => $request->input('coche_id'),
                 'fecha' => $request->input('fecha'),
                 'hora' => $request->input('hora'),
-                'descripcion' => $request->input('descripcion')
+                'descripcion' => $request->input('descripcion'),
+                'estado' => 'pendiente'
             ]);
             return response()->noContent(200);
-
         } else {
             $cita = new Cita();
             $cita->usuario_id = $usuario->id;
@@ -197,6 +199,30 @@ class GestorController extends Controller
         $cita = Cita::where('id', $request->input('idCita'))->firstOrFail();
 
         $cita->delete();
+
+        $administradores = Usuario::where('rol', 'admin')->get();
+        foreach ($administradores as $admin) {
+            Mail::to($admin->email)->send(new CitaEliminada($cita));
+        }
+
+        return response()->noContent(200);
+    }
+
+    public function actualizarEstadoCita(Request $request, $id)
+    {
+        $request->validate([
+            'estado' => 'required|string|in:confirmada,cancelada,finalizada'
+        ]);
+
+        $cita = Cita::with('usuario')->findOrFail($id);
+        $nuevoEstado = $request->input('estado');
+
+        $cita->estado = $nuevoEstado;
+        $cita->save();
+
+        if (in_array($nuevoEstado, ['confirmada', 'cancelada'])) {
+            Mail::to($cita->usuario->email)->send(new CitaEstadoActualizado($cita, $nuevoEstado));
+        }
 
         return response()->noContent(200);
     }
