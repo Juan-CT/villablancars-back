@@ -9,7 +9,12 @@ use App\Models\Coche;
 use App\Models\Cita;
 use App\Mail\CitaGenerada;
 use App\Mail\CitaEstadoActualizado;
+use App\Mail\FormularioVentaAdminMail;
+use App\Mail\FormularioVentaUsuarioMail;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class GestorController extends Controller
 {
@@ -222,6 +227,46 @@ class GestorController extends Controller
 
         if (in_array($nuevoEstado, ['confirmada', 'cancelada'])) {
             Mail::to($cita->usuario->email)->send(new CitaEstadoActualizado($cita, $nuevoEstado));
+        }
+
+        return response()->noContent(200);
+    }
+
+    public function procesarFormularioVenta(Request $request)
+    {
+
+        Log::info('Método procesarFormularioVenta invocado');
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|email',
+        ]);
+
+        $numeroDeImagenes = 0;
+        $imagenRutas = [];
+
+        if ($request->hasFile('imagenes')) {
+            $imagenes = $request->file('imagenes');
+            $numeroDeImagenes = count($imagenes);
+
+            foreach ($imagenes as $imagen) {
+                $url = $imagen->store('imagenes', 'public');
+                $imagenRutas[] = storage_path('app/public/' . $url);
+            }
+        } else {
+            Log::warning('No se encontraron archivos de imagen en la solicitud.');
+        }
+
+        $administradores = Usuario::where('rol', 'admin')->get();
+        foreach ($administradores as $admin) {
+            Mail::to($admin->email)->send(new FormularioVentaAdminMail($request, $imagenRutas));
+        }
+
+        Mail::to($request->email)->send(new FormularioVentaUsuarioMail($request, $numeroDeImagenes));
+
+        foreach ($imagenRutas as $path) {
+            if (file_exists($path)) {
+                unlink($path);
+            }
         }
 
         return response()->noContent(200);
