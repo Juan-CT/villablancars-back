@@ -131,24 +131,18 @@ class GestorController extends Controller
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
 
-        try {
+        $citas = Cita::where('usuario_id', $usuario->id)
+            ->with(['coche.imagenes'])
+            ->orderBy('fecha', 'asc')
+            ->get();
 
-            $citas = Cita::where('usuario_id', $usuario->id)
-                ->with(['coche.imagenes'])
-                ->orderBy('fecha', 'asc')
-                ->get();
-
-
-            $citas->each(function ($cita) {
-                $cita->coche->imagenes->each(function ($imagen) {
-                    $imagen->url = url($imagen->url);
-                });
+        $citas->each(function ($cita) {
+            $cita->coche->imagenes->each(function ($imagen) {
+                $imagen->url = url($imagen->url);
             });
+        });
 
-            return response()->json(['citas' => $citas], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al obtener las citas'], 500);
-        }
+        return response()->json(['citas' => $citas], 200);
     }
 
     public function crearCita(Request $request)
@@ -220,7 +214,7 @@ class GestorController extends Controller
     public function actualizarEstadoCita(Request $request, $id)
     {
         $request->validate([
-            'estado' => 'required|string|in:confirmada,cancelada,finalizada'
+            'estado' => 'required|string|in:confirmada,cancelada,completada'
         ]);
 
         $cita = Cita::with('usuario')->findOrFail($id);
