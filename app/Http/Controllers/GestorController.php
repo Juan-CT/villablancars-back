@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\CitaEliminada;
 use Illuminate\Http\Request;
+
 use App\Models\Usuario;
 use App\Models\Coche;
 use App\Models\Cita;
+
 use App\Mail\CitaGenerada;
 use App\Mail\CitaEstadoActualizado;
+use App\Mail\CitaEliminada;
 use App\Mail\FormularioVentaAdminMail;
 use App\Mail\FormularioVentaUsuarioMail;
+use App\Mail\FormularioContactoMail;
+
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -232,13 +236,30 @@ class GestorController extends Controller
         return response()->noContent(200);
     }
 
-    public function procesarFormularioVenta(Request $request)
+    public function procesarFormularioContacto(Request $request)
     {
-
-        Log::info('Método procesarFormularioVenta invocado');
         $request->validate([
             'nombre' => 'required|string|max:255',
             'email' => 'required|email',
+            'mensaje' => 'required|string|max:2000'
+        ]);
+
+        $administradores = Usuario::where('rol', 'admin')->get();
+        foreach ($administradores as $admin) {
+            Mail::to($admin->email)->send(new FormularioContactoMail($request));
+        }
+
+        return response()->noContent(200);
+    }
+
+    public function procesarFormularioVenta(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|email',
+            'marca' => 'required|string|max:255',
+            'modelo' => 'required|string|max:255',
+            'anio' => 'required|integer|min:2000' . date('Y'),
         ]);
 
         $numeroDeImagenes = 0;
@@ -252,8 +273,6 @@ class GestorController extends Controller
                 $url = $imagen->store('imagenes', 'public');
                 $imagenRutas[] = storage_path('app/public/' . $url);
             }
-        } else {
-            Log::warning('No se encontraron archivos de imagen en la solicitud.');
         }
 
         $administradores = Usuario::where('rol', 'admin')->get();
