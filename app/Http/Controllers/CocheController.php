@@ -7,6 +7,8 @@ use App\Models\Carroceria;
 use Illuminate\Http\Request;
 use App\Models\Coche;
 use App\Models\Imagen;
+use App\Models\Cita;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -138,6 +140,8 @@ class CocheController extends Controller
         try {
             $coche = Coche::findOrFail($id);
             Imagen::where('coche_id', $coche->id)->delete();
+            Cita::where('coche_id', $coche->id)->delete();
+            DB::table('usuario_coche')->where('coche_id', $coche->id)->delete();
             $coche->delete();
             return response()->noContent(200);
         } catch (\Exception $e) {
