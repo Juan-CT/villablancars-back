@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['OPTIONS', 'PUT', 'GET', '*'],
 
-    'allowed_origins' => ['http://localhost:4200'],
+    'allowed_origins' => [
+        'https://villablancars-front-prod.vercel.app',
+        'http://localhost:4200'
+    ],
 
     'allowed_origins_patterns' => [],
 
