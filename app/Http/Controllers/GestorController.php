@@ -253,7 +253,7 @@ class GestorController extends Controller
             'email' => 'required|email',
             'marca' => 'required|string|max:255',
             'modelo' => 'required|string|max:255',
-            'anio' => 'required|integer|min:2000' . date('Y'),
+            'anio' => 'required|integer|between:2000,' . date('Y'),
         ]);
 
         $numeroDeImagenes = 0;
