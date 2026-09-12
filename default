@@ -4,15 +4,8 @@ server {
 
     root /home/site/wwwroot/public;
 
-    index index.php index.html index.htm hostingstart.html;
-
     location / {
+        index index.php index.html index.htm hostingstart.html;
         try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass 127.0.0.1:9000;
     }
 }
