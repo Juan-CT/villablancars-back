@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('imagenes', function (Blueprint $table) {
-            $table->string('url');
+           //  $table->string('url'); Already created in a previous step.
         });
 
         Schema::table('coches', function (Blueprint $table) {
@@ -25,9 +25,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('imagenes', function (Blueprint $table) {
+        /* Schema::table('imagenes', function (Blueprint $table) {
             $table->dropColumn('url');
-        });
+        }); */
 
         Schema::table('coches', function (Blueprint $table) {
             $table->string('imagen')->nullable();
